@@ -159,7 +159,8 @@ class FastTextModule(pl.LightningModule):
         outputs = self.forward(inputs)
         loss = self.loss(outputs, targets)
         self.log("train_loss", loss, on_epoch=True)
-
+        accuracy = self.accuracy_fn(outputs, targets)
+        self.log('train_accuracy', accuracy, on_epoch=True)
         return loss
 
     def validation_step(self, batch: List[torch.LongTensor], batch_idx: int):
