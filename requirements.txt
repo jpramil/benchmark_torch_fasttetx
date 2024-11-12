@@ -8,3 +8,4 @@ mlflow
 unidecode
 nltk
 fasttext
+tensorboard
