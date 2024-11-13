@@ -168,4 +168,4 @@ data/training_data.txt
 
 # Docs
 docs/
-lightning_logs/
+logs/
