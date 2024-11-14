@@ -15,10 +15,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import mlflow
 import pyarrow.parquet as pq
-from model import FastTextModule, FastTextModel
-from dataset import FastTextModelDataset
-from tokenizer import NGramTokenizer
-from preprocess import clean_text_feature
+from src.model import FastTextModule, FastTextModel
+from src.dataset import FastTextModelDataset
+from src.tokenizer import NGramTokenizer
+from src.preprocess import clean_text_feature
 from pytorch_lightning.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
