@@ -176,9 +176,11 @@ class FastTextModule(pl.LightningModule):
         inputs, targets = batch[:-1], batch[-1]
         outputs = self.forward(inputs)
         loss = self.loss(outputs, targets)
-        self.log("validation_loss", loss, on_epoch=True)
+        # self.log("validation_loss_step", loss, on_step=True)
+        self.log("validation_loss", loss, on_epoch=True, on_step=True)
 
         accuracy = self.accuracy_fn(outputs, targets)
+        # self.log('validation_accuracy_step', accuracy, on_step=True)
         self.log('validation_accuracy', accuracy, on_epoch=True)
         return loss
 
