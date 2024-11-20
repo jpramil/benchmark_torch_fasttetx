@@ -158,9 +158,9 @@ class FastTextModule(pl.LightningModule):
         inputs, targets = batch[:-1], batch[-1]
         outputs = self.forward(inputs)
         loss = self.loss(outputs, targets)
-        self.log("train_loss", loss, on_epoch=True)
+        self.log("train_loss", loss, on_epoch=True, on_step=True)
         accuracy = self.accuracy_fn(outputs, targets)
-        self.log('train_accuracy', accuracy, on_epoch=True)
+        self.log('train_accuracy', accuracy, on_epoch=True, on_step=True)
         return loss
 
     def validation_step(self, batch: List[torch.LongTensor], batch_idx: int):
@@ -181,7 +181,7 @@ class FastTextModule(pl.LightningModule):
 
         accuracy = self.accuracy_fn(outputs, targets)
         # self.log('validation_accuracy_step', accuracy, on_step=True)
-        self.log('validation_accuracy', accuracy, on_epoch=True)
+        self.log('validation_accuracy', accuracy, on_epoch=True, on_step=True)
         return loss
 
     def test_step(self, batch: List[torch.LongTensor], batch_idx: int):
