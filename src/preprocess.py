@@ -6,6 +6,7 @@ import pandas as pd
 import unidecode
 from nltk.corpus import stopwords as ntlk_stopwords
 from nltk.stem.snowball import SnowballStemmer
+import numpy as np
 
 
 def clean_text_feature(
@@ -26,7 +27,7 @@ def clean_text_feature(
     stemmer = SnowballStemmer(language="french")
 
     # Remove of accented characters
-    df[text_feature] = df[text_feature].map(unidecode.unidecode)
+    df[text_feature] = df[text_feature].fillna("").map(unidecode.unidecode)
 
     # To lowercase
     df[text_feature] = df[text_feature].str.lower()
@@ -56,3 +57,49 @@ def clean_text_feature(
 
     # Return clean DataFrame
     return df
+
+
+def categorize_surface(
+    df: pd.DataFrame, surface_feature_name: int, like_sirene_3: bool = True
+) -> pd.DataFrame:
+    """
+    Categorize the surface of the activity.
+
+    Args:
+        df (pd.DataFrame): DataFrame to categorize.
+        surface_feature_name (str): Name of the surface feature.
+        like_sirene_3 (bool): If True, categorize like Sirene 3.
+
+    Returns:
+        pd.DataFrame: DataFrame with a new column "surf_cat".
+    """
+    df_copy = df.copy()
+    # Check surface feature exists
+    if surface_feature_name not in df.columns:
+        raise ValueError(f"Surface feature {surface_feature_name} not found in DataFrame.")
+    # Check surface feature is a float variable
+    if not (pd.api.types.is_float_dtype(df[surface_feature_name])):
+        raise ValueError(f"Surface feature {surface_feature_name} must be a float variable.")
+
+    if like_sirene_3:
+        # Categorize the surface
+        df_copy["surf_cat"] = pd.cut(
+            df_copy[surface_feature_name],
+            bins=[0, 120, 400, 2500, np.inf],
+            labels=["1", "2", "3", "4"],
+        ).astype(str)
+    else:
+        # Log transform the surface
+        df_copy["surf_log"] = np.log(df[surface_feature_name])
+
+        # Categorize the surface
+        df_copy["surf_cat"] = pd.cut(
+            df_copy.surf_log,
+            bins=[0, 3, 4, 5, 12],
+            labels=["1", "2", "3", "4"],
+        ).astype(str)
+
+    df_copy[surface_feature_name] = df_copy["surf_cat"].replace("nan", "0")
+    df_copy[surface_feature_name] = df_copy[surface_feature_name].astype(int)
+    df_copy = df_copy.drop(columns=["surf_log", "surf_cat"], errors="ignore")
+    return df_copy
